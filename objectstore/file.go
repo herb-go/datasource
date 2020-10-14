@@ -2,8 +2,10 @@ package objectstore
 
 import (
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 )
 
@@ -20,8 +22,53 @@ func (s *FileObjectStore) abs(path string) (string, error) {
 	}
 	return "", NewErrPathInvalid(path)
 }
-func (s *FileObjectStore) List(path string, iter string, limit int64) ([]*Stat, string, error) {
-	return nil, "", ErrFeatureNotSupported
+func (s *FileObjectStore) List(path string, iter string, limit int) (result []*Stat, newiter string, err error) {
+	defer func() { err = convertFileObjectStoreError(path, err) }()
+	var abs string
+	var files []os.FileInfo
+	abs, err = s.abs(path)
+	if err != nil {
+		return
+	}
+	files, err = ioutil.ReadDir(abs)
+	if err != nil {
+		return
+	}
+	data := make(Stats, len(files))
+	for k, v := range files {
+		data[k] = &Stat{
+			Name:         v.Name(),
+			IsFolder:     v.IsDir(),
+			Size:         v.Size(),
+			ModifiedTime: v.ModTime(),
+		}
+	}
+	sort.Sort(data)
+	var i int
+	for i = 0; i < len(data); i++ {
+		if data[i].Name > iter {
+			break
+		}
+	}
+	var to int
+	if limit < 0 {
+		to = len(data) - 1
+	} else {
+		to = i + limit
+		if to >= len(data) {
+			to = len(data) - 1
+		}
+	}
+	if to == i {
+		return
+	}
+	result = make(Stats, to-i)
+	copy(result, data[i:to])
+	if to == len(data)-1 {
+		return
+	}
+	iter = data[to].Name
+	return
 }
 func (s *FileObjectStore) Stat(path string) (stat *Stat, err error) {
 	defer func() { err = convertFileObjectStoreError(path, err) }()
