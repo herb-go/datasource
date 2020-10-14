@@ -16,5 +16,4 @@ func (o *Object) LoadPart(path string, from int, to int, w io.Writer) (int64, er
 }
 func (o *Object) Save(path string, r io.Reader) (int64, error) {
 	return o.Store.SaveObject(path, r)
-
 }

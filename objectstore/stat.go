@@ -3,8 +3,8 @@ package objectstore
 import "time"
 
 type Stat struct {
-	Path         string
+	Name         string
 	IsFolder     bool
-	Size         int
-	ModifiedTime *time.Time
+	Size         int64
+	ModifiedTime time.Time
 }

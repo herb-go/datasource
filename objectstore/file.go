@@ -20,11 +20,21 @@ func (s *FileObjectStore) abs(path string) (string, error) {
 	}
 	return "", NewErrPathInvalid(path)
 }
-func (s *FileObjectStore) List(prefix string) (status []*Stat, err error) {
-	return nil, ErrFeatureNotSupported
+func (s *FileObjectStore) List(path string, iter string, limit int64) ([]*Stat, string, error) {
+	return nil, "", ErrFeatureNotSupported
 }
 func (s *FileObjectStore) Stat(path string) (stat *Stat, err error) {
-	return nil, ErrFeatureNotSupported
+	defer func() { err = convertFileObjectStoreError(path, err) }()
+	var abs string
+	abs, err = s.abs(path)
+	if err != nil {
+		return
+	}
+	i, err := os.Stat(abs)
+	if err != nil {
+		return
+	}
+	return convertStat(i), nil
 }
 
 func (s *FileObjectStore) Remove(path string) (err error) {
@@ -32,7 +42,7 @@ func (s *FileObjectStore) Remove(path string) (err error) {
 	var abs string
 	abs, err = s.abs(path)
 	if err != nil {
-		return err
+		return
 	}
 	err = os.Remove(abs)
 	return
@@ -49,6 +59,31 @@ func (s *FileObjectStore) Rename(from string, to string) (err error) {
 		return
 	}
 	err = os.Rename(absfrom, absto)
+	return
+}
+func (s *FileObjectStore) Copy(from string, to string) (err error) {
+	defer func() { err = convertFileObjectStoreError(from, err) }()
+	var absfrom, absto string
+	var filefrom, fileto *os.File
+	absfrom, err = s.abs(from)
+	if err != nil {
+		return
+	}
+	absto, err = s.abs(from)
+	if err != nil {
+		return
+	}
+	filefrom, err = os.Open(absfrom)
+	if err != nil {
+		return
+	}
+	defer filefrom.Close()
+	fileto, err = os.Open(absto)
+	if err != nil {
+		return
+	}
+	defer fileto.Close()
+	_, err = io.Copy(fileto, filefrom)
 	return
 }
 func (s *FileObjectStore) LoadObject(path string, w io.Writer) (writen int64, err error) {
@@ -115,4 +150,13 @@ func convertFileObjectStoreError(path string, err error) error {
 		return NewErrPermissionDenied(path)
 	}
 	return err
+}
+
+func convertStat(i os.FileInfo) *Stat {
+	return &Stat{
+		Name:         i.Name(),
+		IsFolder:     i.IsDir(),
+		Size:         i.Size(),
+		ModifiedTime: i.ModTime(),
+	}
 }

@@ -5,11 +5,11 @@ import (
 )
 
 type ObjectStore interface {
-	List(prefix string) ([]*Stat, error)
 	Stat(path string) (*Stat, error)
-	MakeFolder(path string) error
+	List(path string) ([]*Stat, string, error)
 	Remove(path string) error
 	Rename(from string, to string) error
+	Copy(from string, to string) error
 	LoadObject(path string, w io.Writer) (int64, error)
 	LoadObjectPart(path string, from int, to int, w io.Writer) (int64, error)
 	SaveObject(path string, r io.Reader) (int64, error)
@@ -24,8 +24,8 @@ func NewObject(o ObjectStore, p string) *Object {
 
 type NopObjectStore struct{}
 
-func (s NopObjectStore) List(prefix string) ([]*Stat, error) {
-	return nil, ErrFeatureNotSupported
+func (s NopObjectStore) List(path string, iter string, limit int64) ([]*Stat, string, error) {
+	return nil, "", ErrFeatureNotSupported
 }
 func (s NopObjectStore) Stat(path string) (*Stat, error) {
 	return nil, ErrFeatureNotSupported
@@ -35,6 +35,9 @@ func (s NopObjectStore) Remove(path string) error {
 	return ErrFeatureNotSupported
 }
 func (s NopObjectStore) Rename(from string, to string) error {
+	return ErrFeatureNotSupported
+}
+func (s NopObjectStore) Copy(from string, to string) error {
 	return ErrFeatureNotSupported
 }
 func (s NopObjectStore) LoadObject(path string, w io.Writer) (int64, error) {
