@@ -7,12 +7,10 @@ import (
 
 var DataByteOrder = binary.BigEndian
 
-type Data []byte
+var DataTrue = byte(1)
+var DataFalse = byte(0)
 
-var True = byte(1)
-var False = byte(0)
-
-func (d Data) Read(data interface{}) error {
+func Decode(d []byte, data interface{}) error {
 	length := len(d)
 	if length == 0 {
 		return ErrDataLengthNotMatch
@@ -54,10 +52,10 @@ func (d Data) Read(data interface{}) error {
 		}
 		*data = DataByteOrder.Uint32(d)
 	case *int:
-		if length != 4 {
+		if length != 8 {
 			return ErrDataLengthNotMatch
 		}
-		*data = int(int32(DataByteOrder.Uint32(d)))
+		*data = int(int64(DataByteOrder.Uint64(d)))
 	case *uint:
 		if length != 4 {
 			return ErrDataLengthNotMatch
@@ -94,117 +92,115 @@ func (d Data) Read(data interface{}) error {
 	return nil
 }
 
-func CreateData(data interface{}) (Data, error) {
-	var d Data
+func CreateData(data interface{}) ([]byte, error) {
+	var d []byte
 	switch data := data.(type) {
 	case *bool:
 		if *data {
-			return Data{True}, nil
+			return []byte{DataTrue}, nil
 		}
-		return Data{False}, nil
+		return []byte{DataFalse}, nil
 	case bool:
 		if data {
-			return Data{True}, nil
+			return []byte{DataTrue}, nil
 		}
-		return Data{False}, nil
+		return []byte{DataFalse}, nil
 	case *int8:
-		return Data{byte(*data)}, nil
+		return []byte{byte(*data)}, nil
 	case int8:
-		return Data{byte(data)}, nil
+		return []byte{byte(data)}, nil
 	case *uint8:
-		return Data{byte(*data)}, nil
+		return []byte{byte(*data)}, nil
 	case uint8:
-		return Data{byte(data)}, nil
+		return []byte{byte(data)}, nil
 	case *int16:
-		d = make(Data, 2)
+		d = make([]byte, 2)
 		DataByteOrder.PutUint16(d, uint16(*data))
 		return d, nil
 	case int16:
-		d = make(Data, 2)
+		d = make([]byte, 2)
 		DataByteOrder.PutUint16(d, uint16(data))
 		return d, nil
 	case *uint16:
-		d = make(Data, 2)
+		d = make([]byte, 2)
 		DataByteOrder.PutUint16(d, *data)
 		return d, nil
 	case uint16:
-		d = make(Data, 2)
+		d = make([]byte, 2)
 		DataByteOrder.PutUint16(d, data)
 		return d, nil
 	case *int32:
-		d = make(Data, 4)
+		d = make([]byte, 4)
 		DataByteOrder.PutUint32(d, uint32(*data))
 		return d, nil
 	case int32:
-		d = make(Data, 4)
+		d = make([]byte, 4)
 		DataByteOrder.PutUint32(d, uint32(data))
 		return d, nil
 	case *int:
-		d = make(Data, 4)
-		DataByteOrder.PutUint32(d, uint32(*data))
+		d = make([]byte, 8)
+		DataByteOrder.PutUint64(d, uint64(*data))
 		return d, nil
 	case int:
-		d = make(Data, 4)
-		DataByteOrder.PutUint32(d, uint32(data))
+		d = make([]byte, 8)
+		DataByteOrder.PutUint64(d, uint64(data))
 		return d, nil
 	case *uint32:
-		d = make(Data, 4)
+		d = make([]byte, 4)
 		DataByteOrder.PutUint32(d, *data)
 		return d, nil
 	case uint32:
-		d = make(Data, 4)
+		d = make([]byte, 4)
 		DataByteOrder.PutUint32(d, data)
 		return d, nil
 	case *uint:
-		d = make(Data, 4)
+		d = make([]byte, 4)
 		DataByteOrder.PutUint32(d, uint32(*data))
 		return d, nil
 	case uint:
-		d = make(Data, 4)
+		d = make([]byte, 4)
 		DataByteOrder.PutUint32(d, uint32(data))
 		return d, nil
 	case *int64:
-		d = make(Data, 8)
+		d = make([]byte, 8)
 		DataByteOrder.PutUint64(d, uint64(*data))
 		return d, nil
 	case int64:
-		d = make(Data, 8)
+		d = make([]byte, 8)
 		DataByteOrder.PutUint64(d, uint64(data))
 		return d, nil
 	case *uint64:
-		d = make(Data, 8)
+		d = make([]byte, 8)
 		DataByteOrder.PutUint64(d, *data)
 		return d, nil
 	case uint64:
-		d = make(Data, 8)
+		d = make([]byte, 8)
 		DataByteOrder.PutUint64(d, data)
 		return d, nil
 	case *float32:
-		d = make(Data, 4)
+		d = make([]byte, 4)
 		DataByteOrder.PutUint32(d, math.Float32bits(*data))
 		return d, nil
 	case float32:
-		d = make(Data, 4)
+		d = make([]byte, 4)
 		DataByteOrder.PutUint32(d, math.Float32bits(data))
 		return d, nil
 	case *float64:
-		d = make(Data, 8)
+		d = make([]byte, 8)
 		DataByteOrder.PutUint64(d, math.Float64bits(*data))
 		return d, nil
 	case float64:
-		d = make(Data, 8)
+		d = make([]byte, 8)
 		DataByteOrder.PutUint64(d, math.Float64bits(data))
 		return d, nil
 	case *[]byte:
 		return *data, nil
 	case *string:
-		return Data(*data), nil
-
+		return []byte(*data), nil
 	case []byte:
 		return data, nil
 	case string:
-		return Data(data), nil
-
+		return []byte(data), nil
 	}
 	return nil, ErrDataTypeNotSupported
 }

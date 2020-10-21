@@ -5,9 +5,9 @@ import (
 	"testing"
 )
 
-func testLengthNotMatch(t *testing.T, d Data, values ...interface{}) {
+func testLengthNotMatch(t *testing.T, d []byte, values ...interface{}) {
 	for _, v := range values {
-		err := d.Read(v)
+		err := Decode(d, v)
 		if err != ErrDataLengthNotMatch {
 			t.Fatal(err)
 		}
@@ -18,7 +18,7 @@ func test(v interface{}, v2 interface{}) error {
 	if err != nil {
 		return err
 	}
-	return data.Read(v2)
+	return Decode(data, v2)
 }
 func TestData(t *testing.T) {
 	var err error
@@ -224,12 +224,12 @@ func TestData(t *testing.T) {
 	if err != ErrDataTypeNotSupported {
 		t.Fatal(err)
 	}
-	d := Data([]byte{1, 2, 3, 4, 5, 6, 7, 8, 9})
-	err = d.Read(&vfun)
+	d := []byte{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	err = Decode(d, &vfun)
 	if err != ErrDataTypeNotSupported {
 		t.Fatal(err)
 	}
 
 	testLengthNotMatch(t, d, &rbool, &rbyte, &rint8, &ruint8, &rint16, &ruint16, &rint32, &ruint32, &rint64, &ruint64, &rint, &ruint, &rf32, &rf64)
-	testLengthNotMatch(t, Data([]byte{}), &rbyte)
+	testLengthNotMatch(t, []byte{}, &rbyte)
 }
