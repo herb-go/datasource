@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/herb-go/datasource/kvdb"
+	"github.com/herb-go/datasource/kvdb/binaryutil"
 )
 
 type Cache struct {
@@ -39,7 +40,7 @@ func (c *Cache) Get(key []byte) ([]byte, error) {
 			return nil, err
 		}
 	}
-	data, err = c.engine.driver.Get(AppendBytes(c.Path, key))
+	data, err = c.engine.driver.Get(binaryutil.Join(nil, c.Path, key))
 	if err != nil {
 		return nil, err
 	}
@@ -72,15 +73,15 @@ func (c *Cache) Set(key []byte, data []byte, ttl time.Duration) error {
 	if err != nil {
 		return err
 	}
-	return c.engine.driver.Set(AppendBytes(c.Path, key), buf.Bytes(), ttl)
+	return c.engine.driver.Set(binaryutil.Join(nil, c.Path, key), buf.Bytes(), ttl)
 }
 
 func (c *Cache) Del(key []byte) error {
-	return c.engine.driver.Del(AppendBytes(c.Path, key))
+	return c.engine.driver.Del(binaryutil.Join(c.Path, key))
 }
 func (c *Cache) NewCache(path []byte, irrevocable bool) *Cache {
 	return &Cache{
-		Path:        AppendBytes(c.Path, path),
+		Path:        binaryutil.Join(c.Path, path),
 		irrevocable: irrevocable,
 		engine:      c.engine,
 	}

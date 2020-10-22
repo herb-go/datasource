@@ -14,7 +14,7 @@ func testLengthNotMatch(t *testing.T, d []byte, values ...interface{}) {
 	}
 }
 func test(v interface{}, v2 interface{}) error {
-	data, err := CreateData(v)
+	data, err := Encode(v)
 	if err != nil {
 		return err
 	}
@@ -220,7 +220,7 @@ func TestData(t *testing.T) {
 	}
 
 	var vfun = func() {}
-	_, err = CreateData(vfun)
+	_, err = Encode(vfun)
 	if err != ErrDataTypeNotSupported {
 		t.Fatal(err)
 	}
