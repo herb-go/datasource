@@ -45,6 +45,10 @@ func getLengthBytes(data []byte) []byte {
 	return result
 }
 
+type BinaryPacker interface {
+	PackBinary(w io.Writer) error
+}
+
 func PackTo(w io.Writer, delimiter []byte, data ...[]byte) error {
 	var err error
 	var writeDelimiter = len(delimiter) > 0
@@ -167,4 +171,8 @@ func UnpackFrom(r io.Reader, delimiter []byte) ([]byte, error) {
 		}
 	}
 	return data, nil
+}
+
+type BinaryUnpacker interface {
+	UnpackBinary(r io.Reader) error
 }
