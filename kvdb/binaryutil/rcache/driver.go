@@ -6,7 +6,6 @@ import (
 
 type Driver interface {
 	kvdb.Cache
-	Open() error
-	Close() error
+	kvdb.Closer
 	VersionStore
 }

@@ -8,10 +8,13 @@ type Keyvalue interface {
 	Del([]byte) error
 }
 
-type Loader interface {
+type Getter interface {
 	Get([]byte) ([]byte, error)
 }
 
+type Closer interface {
+	Close() error
+}
 type Cache interface {
 	Get([]byte) ([]byte, error)
 	SetWithTTL(key []byte, value []byte, ttl time.Duration) error
