@@ -1,4 +1,4 @@
-package kvcache
+package rcache
 
 import (
 	"sync"

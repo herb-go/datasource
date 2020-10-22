@@ -10,32 +10,32 @@ func (n Nop) Close() error {
 }
 
 //Set set value by given key
-func (n Nop) Set(key string, value []byte) error {
+func (n Nop) Set(key []byte, value []byte) error {
 	return ErrFeatureNotSupported
 }
 
 //Get get value by given key
-func (n Nop) Get(key string) ([]byte, error) {
+func (n Nop) Get(key []byte) ([]byte, error) {
 	return nil, ErrFeatureNotSupported
 }
 
-//Delete delete value by given key
-func (n Nop) Delete(key string) error {
+//Del delete value by given key
+func (n Nop) Del(key []byte) error {
 	return ErrFeatureNotSupported
 }
 
 //Next return values after key not more than given limit
-func (n Nop) Next(key string, limit int) ([][]byte, error) {
+func (n Nop) Next(key []byte, limit int) ([][]byte, error) {
 	return nil, ErrFeatureNotSupported
 }
 
 //Prev return values before key not more than given limit
-func (n Nop) Prev(key string, limit int) ([][]byte, error) {
+func (n Nop) Prev(key []byte, limit int) ([][]byte, error) {
 	return nil, ErrFeatureNotSupported
 }
 
 //SetWithTTL set value by given key and ttl
-func (n Nop) SetWithTTL(key string, ttl time.Duration) error {
+func (n Nop) SetWithTTL(key []byte, value []byte, ttl time.Duration) error {
 	return ErrFeatureNotSupported
 }
 

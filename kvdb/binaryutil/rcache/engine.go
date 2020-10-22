@@ -1,7 +1,9 @@
-package kvcache
+package rcache
 
 import (
 	"time"
+
+	"github.com/herb-go/datasource/kvdb/binaryutil"
 )
 
 type Engine struct {
@@ -19,9 +21,11 @@ func (e *Engine) NewCache(path []byte, irrevocable bool) *Cache {
 }
 
 var DefaultVersionbGenerator = func() (string, error) {
-	buf := make([]byte, 8)
-	DataOrder.PutUint64(buf, uint64(time.Now().UnixNano()))
-	return string(buf), nil
+	v, err := binaryutil.Encode(uint64(time.Now().UnixNano()))
+	if err != nil {
+		return "", err
+	}
+	return string(v), nil
 }
 
 func NewEngine() *Engine {

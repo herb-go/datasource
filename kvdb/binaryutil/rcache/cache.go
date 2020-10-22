@@ -1,4 +1,4 @@
-package kvcache
+package rcache
 
 import (
 	"bytes"
@@ -55,7 +55,7 @@ func (c *Cache) Get(key []byte) ([]byte, error) {
 
 }
 
-func (c *Cache) Set(key []byte, data []byte, ttl time.Duration) error {
+func (c *Cache) SetWithTTL(key []byte, data []byte, ttl time.Duration) error {
 	var version []byte
 	var revocable bool
 	var err error
@@ -73,7 +73,7 @@ func (c *Cache) Set(key []byte, data []byte, ttl time.Duration) error {
 	if err != nil {
 		return err
 	}
-	return c.engine.driver.Set(binaryutil.Join(nil, c.Path, key), buf.Bytes(), ttl)
+	return c.engine.driver.SetWithTTL(binaryutil.Join(nil, c.Path, key), buf.Bytes(), ttl)
 }
 
 func (c *Cache) Del(key []byte) error {

@@ -1,12 +1,11 @@
-package kvcache
+package rcache
 
 import (
 	"bytes"
-	"encoding/binary"
 	"io"
-)
 
-var DataOrder = binary.BigEndian
+	"github.com/herb-go/datasource/kvdb/binaryutil"
+)
 
 type enity struct {
 	typecode byte
@@ -21,13 +20,7 @@ func (e *enity) WriteTo(w io.Writer) error {
 		return err
 	}
 	if e.typecode == enityTypecodeRevocable {
-		vbytes := make([]byte, 8)
-		DataOrder.PutUint64(vbytes, uint64(len(e.version)))
-		_, err = w.Write(vbytes)
-		if err != nil {
-			return err
-		}
-		_, err = w.Write(e.version)
+		err = binaryutil.PackTo(w, nil, e.version)
 		if err != nil {
 			return err
 		}
@@ -66,21 +59,19 @@ func loadEnity(data []byte, revocable bool, version []byte) (*enity, error) {
 		}
 		return createEnity(false, nil, data[1:]), nil
 	case enityTypecodeRevocable:
-		if datalength < 5 {
-			return nil, ErrUnresolvedCacheEnity
-		}
+
 		if !revocable {
 			return nil, ErrEnityTypecodeNotMatch
 		}
-		versionend := 5 + int(DataOrder.Uint64(data[1:5]))
-		if datalength < versionend {
-			return nil, ErrUnresolvedCacheEnity
+		buf := bytes.NewBuffer(data[1:])
+		versiondata, err := binaryutil.UnpackFrom(buf, nil)
+		if err != nil {
+			return nil, err
 		}
-		versiondata := data[5:versionend]
 		if bytes.Compare(version, versiondata) != 0 {
 			return nil, ErrEnityVersionNotMatch
 		}
-		return createEnity(false, versiondata, data[versionend:]), nil
+		return createEnity(false, versiondata, buf.Bytes()), nil
 	}
 	return nil, ErrUnresolvedCacheEnity
 }
