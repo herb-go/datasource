@@ -33,3 +33,23 @@ func (e CommonQueryEvents) AfterFind() error {
 func (e CommonQueryEvents) AfterDelete() error {
 	return nil
 }
+
+//AfterMarshal event raised before find
+func (e CommonQueryEvents) AfterMarshal() error {
+	return nil
+}
+
+//BeforeMarshal event raised after find
+func (e CommonQueryEvents) BeforeMarshal() error {
+	return nil
+}
+
+//AfterUnmarshal event raised before find
+func (e CommonQueryEvents) AfterUnmarshal() error {
+	return nil
+}
+
+//BeforeUnmarshal event raised after find
+func (e CommonQueryEvents) BeforeUnmarshal() error {
+	return nil
+}

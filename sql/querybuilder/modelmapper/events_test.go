@@ -26,4 +26,16 @@ func TestEvent(t *testing.T) {
 	if model.AfterFind() != nil {
 		t.Fatal(model)
 	}
+	if model.BeforeMarshal() != nil {
+		t.Fatal(model)
+	}
+	if model.AfterMarshal() != nil {
+		t.Fatal(model)
+	}
+	if model.BeforeUnmarshal() != nil {
+		t.Fatal(model)
+	}
+	if model.AfterUnmarshal() != nil {
+		t.Fatal(model)
+	}
 }
