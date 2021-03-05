@@ -1,4 +1,4 @@
-module datasource
+module github.com/herb-go/datasource
 
 go 1.16
 
