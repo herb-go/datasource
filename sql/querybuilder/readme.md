@@ -16,7 +16,7 @@
 ### 使用 Table 对象
 
 Table 对象是使用实现了 DBTable 接口的对象操作实现的操作类。
-github.com/herb-go/herb/model/sql/db 的 Table 对象是一个标准的可用于创建 Table 的对象
+github.com/herb-go/datasource/sql/db 的 Table 对象是一个标准的可用于创建 Table 的对象
 
     //使用 Table 对象
     table:=NewTable(dbtable)
@@ -28,7 +28,7 @@ github.com/herb-go/herb/model/sql/db 的 Table 对象是一个标准的可用于
 
     执行时需要传入一个实现了DB接口的对象
 
-    github.com/herb-go/herb/model/sql/db 的DB,Table,TxDB都是有效的DB对象
+    github.com/herb-go/datasource/sql/db 的DB,Table,TxDB都是有效的DB对象
     Table对象也通过继承实现了DB对象的接口
 
     //通过builder来执行
